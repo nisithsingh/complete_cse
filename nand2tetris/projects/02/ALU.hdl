@@ -43,4 +43,46 @@ CHIP ALU {
 
     PARTS:
    // Put you code here:
+   Not16(in=x[0..15],out=notx);
+   Not16(in=y[0..15],out=noty);
+
+   And16(a=x[0..15],b=false,out=xZero);
+   And16(a=y[0..15],b=false,out=yZero);
+
+  
+   //Step 1
+   Mux16(a=x,b=xZero,out=step1x);
+   Not16(in=step1x,out=notstep1x);
+
+   //Step 2
+   Mux16(a=step1x,b=notstep1x,out=step2x);
+
+   //Step 3
+   Mux16(a=y,b=yZero,out=step3y);
+   Not16(in=step3y,out=notstep3y);
+
+   //Step 4
+   Mux16(a=step3y,b=notstep3y,out=step4y);
+
+   //Step 5
+   Add16(a=step2x,b=step4y,out=truestep5);
+   And16(a=step2x,b=step4y,out=falsestep5);
+   Mux16(a=falsestep5,b=truestep5,out=step5);
+
+   //Step6
+   Not16(in=step5,out=notstep5);
+   Mux16(a=step5,b=notstep5,out=out);
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

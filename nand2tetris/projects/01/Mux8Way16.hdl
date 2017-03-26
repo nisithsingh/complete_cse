@@ -19,4 +19,57 @@ CHIP Mux8Way16 {
 
     PARTS:
     // Put your code here:
+    Not(in=sel[0],out=notsel0);
+    Not(in=sel[1],out=notsel1);
+    Not(in=sel[2],out=notsel2);
+
+    //BORROWED OVER FROM PREVIOUSLY BUILT DMux8Wauy 
+
+    And(a=notsel2, b= notsel1, out=notsel2Andnotsel1);
+    And(a=notsel2, b= sel[1], out=notsel2Andsel1);
+    
+    And(a=sel[2],b=notsel1,out=sel2Andnotsel1);
+    And(a=sel[2],b=sel[1],out=sel2Andsel1);
+
+
+    
+    And(a=notsel2Andnotsel1, b=notsel0, out=forA); // a = notsel2Andnotsel1Andnotsel0
+
+    And(a=notsel2Andnotsel1, b=sel[0], out=forB); // b = notsel2Andnotsel1Andsel0
+
+    And(a=notsel2Andsel1, b=notsel0, out=forC); // c = notsel2Andsel1Andnotsel0
+
+    And(a=notsel2Andsel1, b=sel[0], out=forD); //d = notsel2Andsel1Andsel0
+
+    And(a=sel2Andnotsel1, b=notsel0, out=forE); //e = sel2Andnotsel1Andnotsel0
+
+    And(a=sel2Andnotsel1, b=sel[0], out=forF); //f = sel2Andnotsel1Andsel0
+
+    And(a=sel2Andsel1, b=notsel0, out=forG); //g = sel2Andsel1Andnotsel0
+
+    And(a=sel2Andsel1, b=sel[0], out=forH); //h = sel2Andsel1Andsel0
+
+
+    // This gate's logic
+
+    And16with1(a=a[0..15],b=forA,out=outa);
+    And16with1(a=b[0..15],b=forB,out=outb);
+    And16with1(a=c[0..15],b=forC,out=outc);
+    And16with1(a=d[0..15],b=forD,out=outd);
+
+    And16with1(a=e[0..15],b=forE,out=oute);
+    And16with1(a=f[0..15],b=forF,out=outf);
+    And16with1(a=g[0..15],b=forG,out=outg);
+    And16with1(a=h[0..15],b=forH,out=outh);
+
+
+    Or16(a=outa,b=outb,out=outatob);
+    Or16(a=outatob,b=outc,out=outatoc);
+    Or16(a=outatoc,b=outd,out=outatod);
+    Or16(a=outatod,b=oute,out=outatoe);
+    Or16(a=outatoe,b=outf,out=outatof);
+    Or16(a=outatof,b=outg,out=outatog);
+    Or16(a=outatog,b=outh,out=out[0..15]);
+
+
 }
