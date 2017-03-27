@@ -17,4 +17,24 @@ CHIP PC {
 
     PARTS:
     // Put your code here:
+
+    //Load and INC then perform only load
+    //Load and Reset then perform only reset
+
+    
+
+    Inc16(in=regout,out=instep2);
+ 	Mux16(a=regout,b=instep2,sel=inc,out=step2);  
+
+ 	Mux16(a=step2,b=in,sel=load,out=step3);   
+
+ 	
+ 	And16(a=step3,b=false,out=setzero);
+
+    Mux16(a=step3,b=setzero,sel=reset,out=step1);
+
+
+ 	Register(in=step1,load=true,out=regout);
+
+ 	Or16(a=regout,b=false,out=out);
 }
