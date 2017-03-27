@@ -51,38 +51,39 @@ CHIP ALU {
 
   
    //Step 1
-   Mux16(a=x,b=xZero,out=step1x);
+   Mux16(a=x,b=xZero,sel=zx,out=step1x);
    Not16(in=step1x,out=notstep1x);
 
    //Step 2
-   Mux16(a=step1x,b=notstep1x,out=step2x);
+   Mux16(a=step1x,b=notstep1x,sel=nx,out=step2x);
 
    //Step 3
-   Mux16(a=y,b=yZero,out=step3y);
+   Mux16(a=y,b=yZero,sel=zy,out=step3y);
    Not16(in=step3y,out=notstep3y);
 
    //Step 4
-   Mux16(a=step3y,b=notstep3y,out=step4y);
+   Mux16(a=step3y,b=notstep3y,sel=ny,out=step4y);
 
    //Step 5
    Add16(a=step2x,b=step4y,out=truestep5);
    And16(a=step2x,b=step4y,out=falsestep5);
-   Mux16(a=falsestep5,b=truestep5,out=step5);
+   Mux16(a=falsestep5,b=truestep5,sel=f,out[0..7]=step5lsbs,out[8..15]=step5msbs);
 
-   //Step6
-   Not16(in=step5,out=notstep5);
-   Mux16(a=step5,b=notstep5,out=out);
+   //Step 6
+   Not16(in[0..7]=step5lsbs,in[8..15]=step5msbs,out=notstep5);
+   Mux16(a[0..7]=step5lsbs,a[8..15]=step5msbs,b=notstep5,sel=no,out[0..7]=step6lsbs,out[8..15]=step6msbs);
 
+   //Step 7
+   Or8Way(in=step6lsbs,out=lsbsOr);
+   Or8Way(in=step6msbs,out=msbsOr);
+   Or(a=lsbsOr,b=msbsOr,out=checkforzero);
 
+   Mux(a=true,b=false,sel=checkforzero,out=zr);
 
+   //Step 8
+   Mux(a=false,b=true,sel=msbsOr,out=ng);
 
-
-
-
-
-
-
-
-
+   //Step 9
+   Or16(a[0..7]=step6lsbs,a[8..15]=step6msbs,b=false,out=out);
 
 }
