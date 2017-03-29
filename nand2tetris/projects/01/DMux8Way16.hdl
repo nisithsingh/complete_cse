@@ -1,0 +1,55 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/01/DMux8Way.hdl
+
+/**
+ * 8-way demultiplexor:
+ * {a, b, c, d, e, f, g, h} = {in, 0, 0, 0, 0, 0, 0, 0} if sel == 000
+ *                            {0, in, 0, 0, 0, 0, 0, 0} if sel == 001
+ *                            etc.
+ *                            {0, 0, 0, 0, 0, 0, 0, in} if sel == 111
+ */
+
+CHIP DMux8Way16 {
+    IN in[16], sel[3];
+    OUT a[16], b[16], c[16], d[16], e[16], f[16], g[16], h[16];
+
+    PARTS:
+    // Put your code here:
+    Not(in=sel[0],out=notsel0);
+    Not(in=sel[1],out=notsel1);
+    Not(in=sel[2],out=notsel2);
+
+    And16with1(a=in,b=notsel0,out=inAndnotsel0);
+    And16with1(a=in,b=sel[0],out=inAndsel0);
+    
+    And16with1(a=in,b=notsel1,out=inAndnotsel1);
+    And16with1(a=in,b=sel[1],out=inAndsel1);
+
+    And16with1(a=in,b=notsel2,out=inAndnotsel2);
+    And16with1(a=in,b=sel[2],out=inAndsel2);
+
+    And16with1(a=inAndnotsel2,b=notsel1,out=inAndnotsel2Andnotsel1); // in And Nsel2 And Nsel1
+    And16with1(a=inAndnotsel2, b=notsel0, out=inAndnotsel2Andnotsel0); // in And Nsel2 And Nsel0
+    And16with1(a=inAndnotsel2,b=sel[1],out=inAndnotsel2Andsel1); // in And Nsel2 And sel1
+
+    And16with1(a=inAndsel2, b=notsel1, out=inAndsel2Andnotsel1);
+    And16with1(a=inAndsel2, b=sel[1], out=inAndsel2Andsel1);
+    
+    And16with1(a=inAndnotsel2Andnotsel1, b=notsel0, out=a); // a = inAndnotsel2Andnotsel1Andnotsel0
+
+    And16with1(a=inAndnotsel2Andnotsel1, b=sel[0], out=b); // b = inAndnotsel2Andnotsel1Andsel0
+
+    And16with1(a=inAndnotsel2Andnotsel0, b=sel[1], out=c); // c = inAndnotsel2Andnotsel0Andsel1
+
+    And16with1(a=inAndnotsel2Andsel1, b=sel[0], out=d); //d = inAndnotsel2Andsel1Andsel0
+
+    And16with1(a=inAndsel2Andnotsel1, b=notsel0, out=e); //e = inAndsel2Andnotsel1Andnotsel0
+
+    And16with1(a=inAndsel2Andnotsel1, b=sel[0], out=f); //f = inAndsel2Andnotsel1Andsel0
+
+    And16with1(a=inAndsel2Andsel1, b=notsel0, out=g); //g = inAndsel2Andsel1Andnotsel0
+
+    And16with1(a=inAndsel2Andsel1, b=sel[0], out=h); //h = inAndsel2Andsel1Andsel0
+}
