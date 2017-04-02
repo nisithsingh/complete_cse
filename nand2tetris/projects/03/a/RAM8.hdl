@@ -17,6 +17,7 @@ CHIP RAM8 {
     PARTS:
     // Put your code here:
 
+<<<<<<< Updated upstream
     Mux16(a=feedback,b=in,sel=load,out=dmuxin);
 
     DMux8Way16(in=dmuxin,sel=address,a=reg0in,b=reg1in,c=reg2in,d=reg3in,e=reg4in,f=reg5in,g=reg6in,h=reg7in);
@@ -36,5 +37,20 @@ CHIP RAM8 {
     Mux8Way16(a=reg0out,b=reg1out,c=reg2out,d=reg3out,e=reg4out,f=reg5out,g=reg6out,h=reg7out,sel=address,out=feedback);
 
     Or16(a=feedback,b=false,out=out);
+=======
+    Register(in=in,load=true;out=reg1);
+    Register(in=in,load=true;out=reg2);
+    Register(in=in,load=true;out=reg3);
+    Register(in=in,load=true;out=reg4);
+    Register(in=in,load=true;out=reg5);
+    Register(in=in,load=true;out=reg6);
+    Register(in=in,load=true;out=reg7);
+    Register(in=in,load=true;out=reg8);
+
+    Mux16(a=regmuxout,b=in,sel=load,out=readOrwrite);
+
+    DMux8Way(in=readOrwrite,sel=address,out=regselect);
+
+>>>>>>> Stashed changes
 
 }

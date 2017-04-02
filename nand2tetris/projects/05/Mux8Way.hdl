@@ -1,0 +1,75 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/01/Mux8Way.hdl
+
+/**
+ * 8-way 1-bit multiplexor:
+ * out = a if sel == 000
+ *       b if sel == 001
+ *       etc.
+ *       h if sel == 111
+ */
+
+CHIP Mux8Way {
+    IN a, b, c, d,
+       e, f, g, h,
+       sel[3];
+    OUT out;
+
+    PARTS:
+    // Put your code here:
+    Not(in=sel[0],out=notsel0);
+    Not(in=sel[1],out=notsel1);
+    Not(in=sel[2],out=notsel2);
+
+    //BORROWED OVER FROM PREVIOUSLY BUILT DMux8Wauy 
+
+    And(a=notsel2, b= notsel1, out=notsel2Andnotsel1);
+    And(a=notsel2, b= sel[1], out=notsel2Andsel1);
+    
+    And(a=sel[2],b=notsel1,out=sel2Andnotsel1);
+    And(a=sel[2],b=sel[1],out=sel2Andsel1);
+
+
+    
+    And(a=notsel2Andnotsel1, b=notsel0, out=forA); // a = notsel2Andnotsel1Andnotsel0
+
+    And(a=notsel2Andnotsel1, b=sel[0], out=forB); // b = notsel2Andnotsel1Andsel0
+
+    And(a=notsel2Andsel1, b=notsel0, out=forC); // c = notsel2Andsel1Andnotsel0
+
+    And(a=notsel2Andsel1, b=sel[0], out=forD); //d = notsel2Andsel1Andsel0
+
+    And(a=sel2Andnotsel1, b=notsel0, out=forE); //e = sel2Andnotsel1Andnotsel0
+
+    And(a=sel2Andnotsel1, b=sel[0], out=forF); //f = sel2Andnotsel1Andsel0
+
+    And(a=sel2Andsel1, b=notsel0, out=forG); //g = sel2Andsel1Andnotsel0
+
+    And(a=sel2Andsel1, b=sel[0], out=forH); //h = sel2Andsel1Andsel0
+
+
+    // This gate's logic
+
+    And(a=a,b=forA,out=outa);
+    And(a=b,b=forB,out=outb);
+    And(a=c,b=forC,out=outc);
+    And(a=d,b=forD,out=outd);
+
+    And(a=e,b=forE,out=oute);
+    And(a=f,b=forF,out=outf);
+    And(a=g,b=forG,out=outg);
+    And(a=h,b=forH,out=outh);
+
+
+    Or(a=outa,b=outb,out=outatob);
+    Or(a=outatob,b=outc,out=outatoc);
+    Or(a=outatoc,b=outd,out=outatod);
+    Or(a=outatod,b=oute,out=outatoe);
+    Or(a=outatoe,b=outf,out=outatof);
+    Or(a=outatof,b=outg,out=outatog);
+    Or(a=outatog,b=outh,out=out);
+
+
+}

@@ -40,4 +40,97 @@ CHIP CPU {
 
     PARTS:
     // Put your code here:
+
+    //******* A REGISTER SECTION *******
+    Mux16(a=instruction,b=ALUout,sel=instruction[15],out=aInreg);
+
+
+    //A register
+
+    Mux(a=true,b=instruction[5],sel=instruction[15],out=aregload);
+
+    ARegister(in=aInreg, load=aregload,out=aregout);
+
+    //******* ALU SECTION *******
+
+    // D register
+    Mux(a=false,b=instruction[4],sel=instruction[15],out=DinALUload);
+    DRegister(in=ALUout, load=DinALUload,out=DinALU);
+
+    // Logic to select A or M reg for ALU input on bit 12 and op code 
+    Mux16(a=aregout,b=inM,sel=instruction[12],out=CinsSelon12bit);
+    Mux16(a=aregout,b=CinsSelon12bit,sel=instruction[15],out=AorMinALU);
+
+    ALU(x=DinALU, y =AorMinALU,zx=instruction[11],nx=instruction[10],zy=instruction[9],ny=instruction[8],f=instruction[7],no=instruction[6], zr=zrout, ng=ngout, out= ALUout);
+
+    Or(a=instruction[3],b=false,out= writeMcins);
+    Mux(a=false,b=writeMcins,sel=instruction[15],out=writeM);
+
+    Or16(a=aregout,b=false,out[0..14]=addressM,out[15]=false);
+
+    //******* PROGRAM COUNTER SECTION *******
+
+    // ** JUMP logic start **
+
+
+
+    Not(in=zrout,out=notzrout);
+    Not(in=ngout,out=notngout);
+
+
+    //JMP No condition
+    Or(a=instruction[0],b=instruction[1],out=ins0or1);
+    Or(a=ins0or1,b=instruction[2],out=ins0or1or2);
+
+    // JGT
+    And(a=ins0or1or2,b=notngout,out=JGT1);
+    And(a=JGT1,b=notzrout,out=JGT);
+
+    // JEQ
+    And(a=ins0or1or2,b=zrout,out=JEQ);
+
+    //JGE
+    And(a=ins0or1or2,b=notngout,out=JGE11);
+    And(a=JGE11,b=notzrout,out=JGE1);
+
+    And(a=ins0or1or2,b=zrout,out=JGE2);
+    Or(a=JGE1,b=JGE2,out=JGE);
+
+    //JLT
+    And(a=ins0or1or2,b=ngout,out=JLT1);
+    And(a=JLT1,b=notzrout,out=JLT);
+
+    //JNE
+    And(a=ins0or1or2,b=notzrout,out=JNE);
+
+    //JLE
+    And(a=ins0or1or2,b=ngout,out=JLE11);
+    And(a=JLE11,b=notzrout,out=JLE1);
+
+    And(a=ins0or1or2,b=zrout,out=JLE2);
+    Or(a=JLE1,b=JLE2,out=JLE);
+
+    Mux8Way(a=false,b=JGT,c=JEQ,d=JGE,e=JLT,f=JNE,g=JLE,h=ins0or1or2, sel=instruction[0..2],out=jump);
+    //Or8Way(in[0]=false,in[7]=ins0or1or2,in[1]=JGT,in[2]=JEQ,in[3]=JGE,in[4]=JLT,in[5]=JNE,in[6]=JLE,out=jump);
+
+    // ** JUMP logic end **
+
+    // Logic to only load/jump in PC when instruction is a C type 
+    Mux(a=false,b=jump,sel=instruction[15],out=pcload);
+    
+    // when not loading, then increment
+    Not(in=pcload,out=pcinc);
+
+    PC(in=aregout, reset=reset, load=pcload, inc=pcinc, out= pcout);
+    Or16(a=pcout,b=false,out[0..14]=pc,out[15]=false);
+
+    Or16(a=ALUout,b=false,out=outM);
+
+
+
+
+
+
+
+
 }

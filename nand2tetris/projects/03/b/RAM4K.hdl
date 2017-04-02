@@ -16,4 +16,23 @@ CHIP RAM4K {
 
     PARTS:
     // Put your code here:
+
+
+    Mux16(a=feedback, b=in,sel=load,out=readOrwrite);
+
+    DMux8Way16(in=readOrwrite,sel=address[9..11],a=selRam64a,b=selRam64b,c=selRam64c,d=selRam64d,e=selRam64e,f=selRam64f,g=selRam64g,h=selRam64h);
+    DMux8Way(in=load,sel=address[9..11],a=ram64aloadin,b=ram64bloadin,c=ram64cloadin,d=ram64dloadin,e=ram64eloadin,f=ram64floadin,g=ram64gloadin,h=ram64hloadin);
+
+    RAM512(in=selRam64a,load=ram64aloadin,address=address[0..8],out=Ram64aout);
+    RAM512(in=selRam64b,load=ram64bloadin,address=address[0..8],out=Ram64bout);
+    RAM512(in=selRam64c,load=ram64cloadin,address=address[0..8],out=Ram64cout);
+    RAM512(in=selRam64d,load=ram64dloadin,address=address[0..8],out=Ram64dout);
+    RAM512(in=selRam64e,load=ram64eloadin,address=address[0..8],out=Ram64eout);
+    RAM512(in=selRam64f,load=ram64floadin,address=address[0..8],out=Ram64f6out);
+    RAM512(in=selRam64g,load=ram64gloadin,address=address[0..8],out=Ram64gout);
+    RAM512(in=selRam64h,load=ram64hloadin,address=address[0..8],out=Ram64hout);
+
+    Mux8Way16(a=Ram64aout,b=Ram64bout,c=Ram64cout,d=Ram64dout,e=Ram64eout,f=Ram64f6out,g=Ram64gout,h=Ram64hout,sel=address[9..11],out=feedback);
+
+    Or16(a=feedback,b=false,out=out);
 }
